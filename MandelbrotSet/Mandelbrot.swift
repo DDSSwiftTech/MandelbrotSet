@@ -25,9 +25,4 @@ class Mandelbrot {
         
         return i - 1
     }
-    
-    func pythag(x: Double, y: Double) -> Double {
-        return sqrt(x * x + y * y)
-    }
-    
 }
