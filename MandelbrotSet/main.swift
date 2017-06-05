@@ -14,7 +14,7 @@ func colorForColorIDX(_ idx: Int) -> CGColor {
     return NSColor(
         calibratedRed: CGFloat(idx)/(CGFloat(maxIter) - 1),
         green: 1 - CGFloat(idx)/(CGFloat(maxIter) - 1),
-        blue: 1,
+        blue: 0,
         alpha: 1).cgColor
 }
 
@@ -50,8 +50,8 @@ if let context = CGDisplayGetDrawingContext(CGMainDisplayID()) {
                     i: maxIter)
                 
                 let rect = CGRect(
-                    x: Double(displaySize.midX) + 250 * x,
-                    y: Double(displaySize.midY) + 250 * y, width: 0.1, height: 0.1)
+                    x: Double(displaySize.midX) + Double(displaySize.midY) / 2 * x,
+                    y: Double(displaySize.midY) + Double(displaySize.midY) / 2 * y, width: 0.1, height: 0.1)
                 
                 arrayQueue.async {
                     colorArray[selectedColor]!.append(rect)
