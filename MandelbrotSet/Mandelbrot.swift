@@ -1,6 +1,6 @@
 //
 //  Mandelbrot.swift
-//  CGPinball
+//  MandelbrotSet
 //
 //  Created by David Schwartz on 6/4/17.
 //  Copyright © 2017 DDS Programming. All rights reserved.
