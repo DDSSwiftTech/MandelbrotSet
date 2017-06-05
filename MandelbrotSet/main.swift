@@ -10,6 +10,8 @@ import Cocoa
 
 let maxIter = 20
 
+let displaySize = CGDisplayBounds(CGMainDisplayID())
+
 func colorForColorIDX(_ idx: Int) -> CGColor {
     return NSColor(
         calibratedRed: CGFloat(idx)/(CGFloat(maxIter) - 1),
@@ -28,8 +30,6 @@ if let context = CGDisplayGetDrawingContext(CGMainDisplayID()) {
     
     let arrayQueue = DispatchQueue(label: "arrayQueue",
                                    qos: .userInteractive)
-    
-    let displaySize = CGDisplayBounds(CGMainDisplayID())
     
     context.setFillColor(colorForColorIDX(1))
     
@@ -86,6 +86,34 @@ guard let keyDownTracker = CGEvent.tapCreate(
     eventsOfInterest: CGEventMask(1 << CGEventType.keyDown.rawValue),
     callback: { (proxy, type, event, data) -> Unmanaged<CGEvent>? in
         switch event.getIntegerValueField(.keyboardEventKeycode) {
+        case 1: // S: Save
+            guard (try? FileManager.default.createDirectory(
+                atPath: NSHomeDirectory() + "/Desktop/2DShapesCGPictures",
+                withIntermediateDirectories: true,
+                attributes: nil)) != nil else {
+                    break
+            }
+            
+            guard let cgImage = CGDisplayCreateImage(
+                CGMainDisplayID(),
+                rect:CGRect(
+                    x: displaySize.midX > displaySize.midY ? displaySize.midX - displaySize.midY : displaySize.midY - displaySize.midX,
+                    y: 0,
+                    width: displaySize.midX > displaySize.midY ? displaySize.height : displaySize.width,
+                    height: displaySize.midX > displaySize.midY ? displaySize.height : displaySize.width
+            )) else {
+                break
+            }
+            
+            if let destination = CGImageDestinationCreateWithURL(
+                URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/\( Date(timeIntervalSinceNow: TimeInterval(TimeZone.current.secondsFromGMT())) ).png",
+                    isDirectory: false) as CFURL,
+                kUTTypePNG, 1, nil) {
+                
+                CGImageDestinationAddImage(destination, cgImage, nil)
+                CGImageDestinationFinalize(destination)
+            }
+            
         case 12: // Q: Quit
             exit(0)
             
