@@ -22,8 +22,6 @@ CGDisplayCapture(CGMainDisplayID())
 
 if let context = CGDisplayGetDrawingContext(CGMainDisplayID()) {
     
-    let mandelBrot = Mandelbrot()
-    
     let calcQueue = DispatchQueue(label: "calcQueue",
                                   qos: .userInteractive,
                                   attributes: .concurrent)
@@ -46,7 +44,7 @@ if let context = CGDisplayGetDrawingContext(CGMainDisplayID()) {
             
             calcQueue.async {
                 
-                let selectedColor = mandelBrot.calculate(
+                let selectedColor = Mandelbrot.calculate(
                     x: Double(x),
                     y: Double(y),
                     i: maxIter)

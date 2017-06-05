@@ -10,7 +10,7 @@ import Foundation
 import simd
 
 class Mandelbrot {
-    func calculate(x: Double, y: Double, i: Int) -> Int {
+    class func calculate(x: Double, y: Double, i: Int) -> Int {
         
         var z = vector2(x, y)
         
