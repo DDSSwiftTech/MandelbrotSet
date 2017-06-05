@@ -33,8 +33,6 @@ if let context = CGDisplayGetDrawingContext(CGMainDisplayID()) {
     
     let displaySize = CGDisplayBounds(CGMainDisplayID())
     
-    var currentColor: Int!
-    
     context.setFillColor(colorForColorIDX(1))
     
     var colorArray: [Int: [CGRect]] = [:]
