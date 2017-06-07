@@ -7,77 +7,52 @@
 //
 
 import Cocoa
-
-let maxIter = 20
-
-let displaySize = CGDisplayBounds(CGMainDisplayID())
-
-func colorForColorIDX(_ idx: Int) -> CGColor {
-    return NSColor(
-        calibratedRed: CGFloat(idx)/(CGFloat(maxIter) - 1),
-        green: 1 - CGFloat(idx)/(CGFloat(maxIter) - 1),
-        blue: 0,
-        alpha: 1).cgColor
-}
+import CoreGraphics
 
 CGDisplayCapture(CGMainDisplayID())
 
-if let context = CGDisplayGetDrawingContext(CGMainDisplayID()) {
-    
-    let calcQueue = DispatchQueue(label: "calcQueue",
-                                  qos: .userInteractive,
-                                  attributes: .concurrent)
-    
-    let arrayQueue = DispatchQueue(label: "arrayQueue",
-                                   qos: .userInteractive)
-    
-    context.setFillColor(colorForColorIDX(1))
-    
-    var colorArray: [Int: [CGRect]] = [:]
-    
-    for i in 0..<maxIter {
-        colorArray[i] = []
-    }
-    
-    for x in stride(from: -2, through: 2, by: 0.001) {
-        for y in stride(from: -2, through: 2, by: 0.001) {
-            
-            calcQueue.async {
-                
-                let selectedColor = Mandelbrot.calculate(
-                    x: Double(x),
-                    y: Double(y),
-                    i: maxIter)
-                
-                let rect = CGRect(
-                    x: Double(displaySize.midX) + Double(displaySize.midY) / 2 * x,
-                    y: Double(displaySize.midY) + Double(displaySize.midY) / 2 * y, width: 0.1, height: 0.1)
-                
-                arrayQueue.async {
-                    colorArray[selectedColor]!.append(rect)
-                    
-                    if colorArray[selectedColor]!.count >= 10000 {
-                        context.setFillColor(colorForColorIDX(selectedColor))
-                        context.addRects(colorArray[selectedColor]!)
-                        context.fillPath()
-                        
-                        colorArray[selectedColor]!.removeAll(keepingCapacity: true)
-                    }
-                }
-            }
-        }
-    }
-    
-    calcQueue.async(flags: .barrier) {
-        arrayQueue.async(flags: .barrier) {
-            for i in 0..<maxIter {
-                context.setFillColor(colorForColorIDX(i))
-                context.addRects(colorArray[i]!)
-                context.fillPath()
-            }
-        }
+guard let ctx = CGDisplayGetDrawingContext(CGMainDisplayID()) else {
+    FileHandle.standardError.write("Failed to get drawing context\n".data(using: .utf8)!)
+    exit(1)
+}
+
+guard let image = CGDisplayCreateImage(CGMainDisplayID()) else {
+    FileHandle.standardError.write("Failed to get create image\n".data(using: .utf8)!)
+    exit(1)
+}
+
+let bitmap = NSBitmapImageRep(cgImage: image)
+
+var rect = CGRect(
+    x: (bitmap.cgImage!.width - bitmap.cgImage!.height) / 2,
+    y: 0,
+    width: bitmap.cgImage!.height ,
+    height: bitmap.cgImage!.height )
+
+let inclusivePixel = [255, 150, 0, 0]
+
+let exclusivePixel = [255, 0, 150, 0]
+
+for x in 0..<Int(rect.width) {
+    for y in 0..<Int(rect.height) {
+        
+        let iterations = Mandelbrot.calculate(x: Double(-2 + CGFloat(x) / rect.height * 4),
+                                              y: Double(-2 + CGFloat(y) / rect.height * 4), i: 20)
+        
+        var pixel = (iterations < 19 ? inclusivePixel : exclusivePixel)
+        
+        bitmap.setPixel(
+            &pixel,
+            atX: x ,
+            y: y )
     }
 }
+
+let displayBounds = CGDisplayBounds(CGMainDisplayID())
+
+let adjustedDisplayBounds = CGRect(x: (displayBounds.width - displayBounds.height) / 2, y: 0, width: displayBounds.width, height: displayBounds.height)
+
+ctx.draw(bitmap.cgImage!, in: adjustedDisplayBounds)
 
 guard let keyDownTracker = CGEvent.tapCreate(
     tap: .cghidEventTap,
@@ -97,18 +72,18 @@ guard let keyDownTracker = CGEvent.tapCreate(
             guard let cgImage = CGDisplayCreateImage(
                 CGMainDisplayID(),
                 rect:CGRect(
-                    x: displaySize.midX > displaySize.midY ? displaySize.midX - displaySize.midY : displaySize.midY - displaySize.midX,
+                    x: displayBounds.midX > displayBounds.midY ? displayBounds.midX - displayBounds.midY : displayBounds.midY - displayBounds.midX,
                     y: 0,
-                    width: displaySize.midX > displaySize.midY ? displaySize.height : displaySize.width,
-                    height: displaySize.midX > displaySize.midY ? displaySize.height : displaySize.width
+                    width: displayBounds.midX > displayBounds.midY ? displayBounds.height : displayBounds.width,
+                    height: displayBounds.midX > displayBounds.midY ? displayBounds.height : displayBounds.width
             )) else {
                 break
             }
             
             if let destination = CGImageDestinationCreateWithURL(
-                URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/\( Date(timeIntervalSinceNow: TimeInterval(TimeZone.current.secondsFromGMT())) ).png",
+                URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/\( Date(timeIntervalSinceNow: TimeInterval(TimeZone.current.secondsFromGMT())) ).jp2",
                     isDirectory: false) as CFURL,
-                kUTTypePNG, 1, nil) {
+                kUTTypeJPEG2000, 1, nil) {
                 
                 CGImageDestinationAddImage(destination, cgImage, nil)
                 CGImageDestinationFinalize(destination)
