@@ -28,9 +28,9 @@ var rect = CGRect(
     width: bitmap.cgImage!.height ,
     height: bitmap.cgImage!.height )
 
-let inclusivePixel = [255, 150, 0, 0]
+let inclusivePixel = [255, 0, 150, 0]
 
-let exclusivePixel = [255, 0, 150, 0]
+let exclusivePixel = [255, 150, 0, 0]
 
 for x in 0..<Int(rect.width) {
     for y in 0..<Int(rect.height) {
@@ -38,7 +38,7 @@ for x in 0..<Int(rect.width) {
         let iterations = Mandelbrot.calculate(x: Double(-2 + CGFloat(x) / rect.width * 4),
                                               y: Double(-2 + CGFloat(y) / rect.height * 4), i: 20)
         
-        var pixel = (iterations < 19 ? inclusivePixel : exclusivePixel)
+        var pixel = (iterations < 19 ? exclusivePixel : inclusivePixel)
         
         bitmap.setPixel(
             &pixel,
