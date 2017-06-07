@@ -36,7 +36,7 @@ let exclusivePixel = [255, 0, 150, 0]
 for x in 0..<Int(rect.width) {
     for y in 0..<Int(rect.height) {
         
-        let iterations = Mandelbrot.calculate(x: Double(-2 + CGFloat(x) / rect.height * 4),
+        let iterations = Mandelbrot.calculate(x: Double(-2 + CGFloat(x) / rect.width * 4),
                                               y: Double(-2 + CGFloat(y) / rect.height * 4), i: 20)
         
         var pixel = (iterations < 19 ? inclusivePixel : exclusivePixel)
