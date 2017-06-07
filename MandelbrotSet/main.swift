@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import CoreGraphics
 
 CGDisplayCapture(CGMainDisplayID())
 
