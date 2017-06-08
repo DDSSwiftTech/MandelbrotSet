@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:MandelbrotSet.xcodeproj">
+      location = "self:/Users/funtimes/DevStuff/GitRepos/MandelbrotSet/JuliaSet.xcodeproj">
    </FileRef>
 </Workspace>

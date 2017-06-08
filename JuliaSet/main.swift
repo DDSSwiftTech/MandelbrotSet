@@ -1,6 +1,6 @@
 //
 //  main.swift
-//  MandelbrotSet
+//  JuliaSet
 //
 //  Created by David Schwartz on 6/4/17.
 //  Copyright © 2017 DDS Programming. All rights reserved.
@@ -35,7 +35,7 @@ let exclusivePixel = [255, 150, 0, 0]
 for x in 0..<Int(rect.width) {
     for y in 0..<Int(rect.height) {
         
-        let iterations = Mandelbrot.calculate(x: Double(-2 + CGFloat(x) / rect.width * 4),
+        let iterations = Julia.calculate(x: Double(-2 + CGFloat(x) / rect.width * 4),
                                               y: Double(-2 + CGFloat(y) / rect.height * 4), i: 20)
         
         var pixel = (iterations < 19 ? exclusivePixel : inclusivePixel)

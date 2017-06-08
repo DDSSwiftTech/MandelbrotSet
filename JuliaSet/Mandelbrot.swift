@@ -1,6 +1,6 @@
 //
-//  Mandelbrot.swift
-//  MandelbrotSet
+//  Julia.swift
+//  JuliaSet
 //
 //  Created by David Schwartz on 6/4/17.
 //  Copyright © 2017 DDS Programming. All rights reserved.
@@ -9,7 +9,7 @@
 import Foundation
 import simd
 
-class Mandelbrot {
+class Julia {
     class func calculate(x: Double, y: Double, i: Int) -> Int {
         
         var z = vector2(x, y)
