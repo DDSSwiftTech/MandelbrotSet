@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3374A5B81EE4D87400639644 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3374A5B71EE4D87400639644 /* main.swift */; };
-		3374A5BF1EE4D88B00639644 /* Mandelbrot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3374A5BE1EE4D88B00639644 /* Mandelbrot.swift */; };
+		3374A5BF1EE4D88B00639644 /* Julia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3374A5BE1EE4D88B00639644 /* Julia.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,7 +26,7 @@
 /* Begin PBXFileReference section */
 		3374A5B41EE4D87200639644 /* MandelbrotSet */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MandelbrotSet; sourceTree = BUILT_PRODUCTS_DIR; };
 		3374A5B71EE4D87400639644 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		3374A5BE1EE4D88B00639644 /* Mandelbrot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mandelbrot.swift; sourceTree = "<group>"; };
+		3374A5BE1EE4D88B00639644 /* Julia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Julia.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,7 +60,7 @@
 			isa = PBXGroup;
 			children = (
 				3374A5B71EE4D87400639644 /* main.swift */,
-				3374A5BE1EE4D88B00639644 /* Mandelbrot.swift */,
+				3374A5BE1EE4D88B00639644 /* Julia.swift */,
 			);
 			path = JuliaSet;
 			sourceTree = "<group>";
@@ -125,7 +125,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3374A5B81EE4D87400639644 /* main.swift in Sources */,
-				3374A5BF1EE4D88B00639644 /* Mandelbrot.swift in Sources */,
+				3374A5BF1EE4D88B00639644 /* Julia.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
