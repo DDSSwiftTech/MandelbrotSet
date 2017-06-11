@@ -28,14 +28,6 @@ var rect = CGRect(
     width: bitmap.cgImage!.height ,
     height: bitmap.cgImage!.height )
 
-// decide the random colors for each iteration number
-
-var randColorList: [[Int]] = []
-
-for _ in 0..<99999 {
-    randColorList.append([255, Int(arc4random_uniform(255)), Int(arc4random_uniform(255)), Int(arc4random_uniform(255))])
-}
-
 // iterate through each pixel in the bitmap, and decide if it's inside the Mandelbrot set
 // as well as how many iterations it took to leave the set
 
