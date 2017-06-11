@@ -25,7 +25,7 @@ let bitmap = NSBitmapImageRep(cgImage: image)
 var rect = CGRect(
     x: (bitmap.cgImage!.width - bitmap.cgImage!.height) / 2,
     y: 0,
-    width: bitmap.cgImage!.height ,
+    width: bitmap.cgImage!.height,
     height: bitmap.cgImage!.height )
 
 // iterate through each pixel in the bitmap, and decide if it's inside the Mandelbrot set
