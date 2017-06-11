@@ -1,6 +1,6 @@
 //
 //  main.swift
-//  JuliaSet
+//  MandelbrotSet
 //
 //  Created by David Schwartz on 6/4/17.
 //  Copyright © 2017 DDS Programming. All rights reserved.
@@ -28,17 +28,19 @@ var rect = CGRect(
     width: bitmap.cgImage!.height ,
     height: bitmap.cgImage!.height )
 
-let inclusivePixel = [255, 0, 150, 0]
+var randColorList: [[Int]] = []
 
-let exclusivePixel = [255, 150, 0, 0]
+for _ in 0..<99999 {
+    randColorList.append([255, Int(arc4random_uniform(255)), Int(arc4random_uniform(255)), Int(arc4random_uniform(255))])
+}
 
 for x in 0..<Int(rect.width) {
     for y in 0..<Int(rect.height) {
         
-        let iterations = Julia.calculate(x: Double(-2 + CGFloat(x) / rect.width * 4),
-                                              y: Double(-2 + CGFloat(y) / rect.height * 4), i: 20)
+        let iterations = Mandelbrot.calculate(x: Double(-2 + CGFloat(x) / rect.width * 4),
+                                              y: Double(-2 + CGFloat(y) / rect.height * 4), i: 800)
         
-        var pixel = (iterations < 19 ? exclusivePixel : inclusivePixel)
+        var pixel = randColorList[iterations]
         
         bitmap.setPixel(
             &pixel,

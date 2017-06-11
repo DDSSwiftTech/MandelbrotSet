@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3374A5B81EE4D87400639644 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3374A5B71EE4D87400639644 /* main.swift */; };
-		3374A5BF1EE4D88B00639644 /* Julia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3374A5BE1EE4D88B00639644 /* Julia.swift */; };
+		3374A5BF1EE4D88B00639644 /* Mandelbrot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3374A5BE1EE4D88B00639644 /* Mandelbrot.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,7 +26,7 @@
 /* Begin PBXFileReference section */
 		3374A5B41EE4D87200639644 /* MandelbrotSet */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MandelbrotSet; sourceTree = BUILT_PRODUCTS_DIR; };
 		3374A5B71EE4D87400639644 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		3374A5BE1EE4D88B00639644 /* Julia.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Julia.swift; sourceTree = "<group>"; };
+		3374A5BE1EE4D88B00639644 /* Mandelbrot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mandelbrot.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,7 +43,7 @@
 		3374A5AB1EE4D87200639644 = {
 			isa = PBXGroup;
 			children = (
-				3374A5B61EE4D87200639644 /* JuliaSet */,
+				3374A5B61EE4D87200639644 /* MandelbrotSet */,
 				3374A5B51EE4D87200639644 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,21 +56,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		3374A5B61EE4D87200639644 /* JuliaSet */ = {
+		3374A5B61EE4D87200639644 /* MandelbrotSet */ = {
 			isa = PBXGroup;
 			children = (
 				3374A5B71EE4D87400639644 /* main.swift */,
-				3374A5BE1EE4D88B00639644 /* Julia.swift */,
+				3374A5BE1EE4D88B00639644 /* Mandelbrot.swift */,
 			);
-			path = JuliaSet;
+			path = MandelbrotSet;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3374A5B31EE4D87200639644 /* JuliaSet */ = {
+		3374A5B31EE4D87200639644 /* MandelbrotSet */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3374A5BB1EE4D87400639644 /* Build configuration list for PBXNativeTarget "JuliaSet" */;
+			buildConfigurationList = 3374A5BB1EE4D87400639644 /* Build configuration list for PBXNativeTarget "MandelbrotSet" */;
 			buildPhases = (
 				3374A5B01EE4D87200639644 /* Sources */,
 				3374A5B11EE4D87200639644 /* Frameworks */,
@@ -80,7 +80,7 @@
 			);
 			dependencies = (
 			);
-			name = JuliaSet;
+			name = MandelbrotSet;
 			productName = MandelbrotSet;
 			productReference = 3374A5B41EE4D87200639644 /* MandelbrotSet */;
 			productType = "com.apple.product-type.tool";
@@ -102,7 +102,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3374A5AF1EE4D87200639644 /* Build configuration list for PBXProject "JuliaSet" */;
+			buildConfigurationList = 3374A5AF1EE4D87200639644 /* Build configuration list for PBXProject "MandelbrotSet" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -114,7 +114,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3374A5B31EE4D87200639644 /* JuliaSet */,
+				3374A5B31EE4D87200639644 /* MandelbrotSet */,
 			);
 		};
 /* End PBXProject section */
@@ -125,7 +125,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3374A5B81EE4D87400639644 /* main.swift in Sources */,
-				3374A5BF1EE4D88B00639644 /* Julia.swift in Sources */,
+				3374A5BF1EE4D88B00639644 /* Mandelbrot.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,7 +242,7 @@
 				LLVM_LTO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_DISABLE_SAFETY_CHECKS = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -255,14 +255,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_DISABLE_SAFETY_CHECKS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		3374A5AF1EE4D87200639644 /* Build configuration list for PBXProject "JuliaSet" */ = {
+		3374A5AF1EE4D87200639644 /* Build configuration list for PBXProject "MandelbrotSet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3374A5B91EE4D87400639644 /* Debug */,
@@ -271,7 +271,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3374A5BB1EE4D87400639644 /* Build configuration list for PBXNativeTarget "JuliaSet" */ = {
+		3374A5BB1EE4D87400639644 /* Build configuration list for PBXNativeTarget "MandelbrotSet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3374A5BC1EE4D87400639644 /* Debug */,
