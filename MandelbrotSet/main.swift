@@ -28,19 +28,24 @@ var rect = CGRect(
     width: bitmap.cgImage!.height ,
     height: bitmap.cgImage!.height )
 
+// decide the random colors for each iteration number
+
 var randColorList: [[Int]] = []
 
 for _ in 0..<99999 {
     randColorList.append([255, Int(arc4random_uniform(255)), Int(arc4random_uniform(255)), Int(arc4random_uniform(255))])
 }
 
+// iterate through each pixel in the bitmap, and decide if it's inside the Mandelbrot set
+// as well as how many iterations it took to leave the set
+
 for x in 0..<Int(rect.width) {
     for y in 0..<Int(rect.height) {
         
         let iterations = Mandelbrot.calculate(x: Double(-2 + CGFloat(x) / rect.width * 4),
-                                              y: Double(-2 + CGFloat(y) / rect.height * 4), i: 8000)
+                                              y: Double(-2 + CGFloat(y) / rect.height * 4), i: 200)
         
-        var pixel = randColorList[iterations]
+        var pixel = [255, iterations <= 30 ? iterations / 19 * 255 : 0, 0, 0]
         
         bitmap.setPixel(
             &pixel,
@@ -49,11 +54,17 @@ for x in 0..<Int(rect.width) {
     }
 }
 
+// get the bounds of the main display
+
 let displayBounds = CGDisplayBounds(CGMainDisplayID())
+
+// adjust the display bounds so that the bitmap is drawn centered
 
 let adjustedDisplayBounds = CGRect(x: (displayBounds.width - displayBounds.height) / 2, y: 0, width: displayBounds.width, height: displayBounds.height)
 
 ctx.draw(bitmap.cgImage!, in: adjustedDisplayBounds)
+
+// extra features for saving images, quitting, etc
 
 guard let keyDownTracker = CGEvent.tapCreate(
     tap: .cghidEventTap,

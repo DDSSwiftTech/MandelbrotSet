@@ -20,7 +20,7 @@ class Mandelbrot {
                 return passno
             }
             
-            z = vector2(pow(z.x, 2) - pow(z.y, 2), 2 * z.x * z.y) - vector2(x, y)
+            z = vector2(pow(z.x, 2) - pow(z.y, 2), 2 * z.x * z.y) + vector2(x, y)
         }
         
         return i - 1
