@@ -17,14 +17,10 @@ class Mandelbrot {
         for passno in 0...i {
             
             if (pow(z.x, 2) + pow(z.y, 2)) >= 4 {
-                return 0
+                return passno
             }
             
             z = vector2(pow(z.x, 2) - pow(z.y, 2), 2 * z.x * z.y) - vector2(x, y)
-            
-            if (pow(z.x, 2) + pow(z.y, 2)) >= 4 {
-                return passno
-            }
         }
         
         return i - 1
