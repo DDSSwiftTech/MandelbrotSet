@@ -38,7 +38,7 @@ for x in 0..<Int(rect.width) {
     for y in 0..<Int(rect.height) {
         
         let iterations = Mandelbrot.calculate(x: Double(-2 + CGFloat(x) / rect.width * 4),
-                                              y: Double(-2 + CGFloat(y) / rect.height * 4), i: 800)
+                                              y: Double(-2 + CGFloat(y) / rect.height * 4), i: 8000)
         
         var pixel = randColorList[iterations]
         
@@ -82,9 +82,9 @@ guard let keyDownTracker = CGEvent.tapCreate(
             }
             
             if let destination = CGImageDestinationCreateWithURL(
-                URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/\( Date(timeIntervalSinceNow: TimeInterval(TimeZone.current.secondsFromGMT())) ).jp2",
+                URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/\( Date(timeIntervalSinceNow: TimeInterval(TimeZone.current.secondsFromGMT())) ).png",
                     isDirectory: false) as CFURL,
-                kUTTypeJPEG2000, 1, nil) {
+                kUTTypePNG, 1, nil) {
                 
                 CGImageDestinationAddImage(destination, cgImage, nil)
                 CGImageDestinationFinalize(destination)
