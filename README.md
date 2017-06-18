@@ -3,6 +3,12 @@
 This is a simple program that will accurately draw the Mandelbrot set, using Core Graphics.
 Feel free to contribute improvements, or use the code for whatever.
 
+## Supported Keystrokes
+- arrow keys: panning
+- +/-: increase/decrease zoom
+- q: quit
+- s: save a copy of the current screen to the desktop
+
 ### Examples
 
 <img src="https://www.dropbox.com/s/nncu7htfaapq0zg/2017-06-18%2000%3A01%3A54%20%2B0000.png?dl=1" />
