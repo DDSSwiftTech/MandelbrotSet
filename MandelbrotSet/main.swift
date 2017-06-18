@@ -20,11 +20,11 @@ class MandelbrotDrawClass {
     let ctx: CGContext!
     let drawQueue = DispatchQueue(label: "drawQueue")
     
-    var xAdjustedMin: CGFloat = -2
-    var yAdjustedMin: CGFloat = -2
+    var xAdjustedMin: Float80 = -2
+    var yAdjustedMin: Float80 = -2
     
-    var Lx: CGFloat = 4
-    var Ly: CGFloat = 4
+    var Lx: Float80 = 4
+    var Ly: Float80 = 4
     
     let randomColorList: [[Int]]
     
@@ -145,8 +145,8 @@ class MandelbrotDrawClass {
                 // performing each piece of this arithmetic with Float80 rather than Double or CGFloat yields higher-resolution results
                 
                 let iterations = Mandelbrot.calculate(
-                    x: Float80(Double(xAdjustedMin)) + Float80(x) / Float80(Double(rect.width)) * Float80(Double(Lx)),
-                    y: Float80(Double(yAdjustedMin)) + Float80(y) / Float80(Double(rect.height)) * Float80(Double(Ly)),
+                    x: xAdjustedMin + Float80(x) / Float80(Double(rect.width)) * Lx,
+                    y: yAdjustedMin + Float80(y) / Float80(Double(rect.height)) * Ly,
                     i: self.maxIterations
                 )
                 

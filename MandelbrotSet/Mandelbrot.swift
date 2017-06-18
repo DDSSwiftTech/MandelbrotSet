@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import simd
 
 struct vector2 {
     
