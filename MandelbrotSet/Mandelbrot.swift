@@ -9,18 +9,32 @@
 import Foundation
 import simd
 
+struct vector2 {
+    
+    let x: Float80
+    let y: Float80
+    
+    init(_ __x: Float80, _ __y: Float80) {
+        x = __x
+        y = __y
+    }
+    
+    static func +(lhs: vector2, rhs: vector2) -> vector2 {
+        return vector2(lhs.x + rhs.x, lhs.y + rhs.y)
+    }
+}
+
 class Mandelbrot {
-    class func calculate(x: Double, y: Double, i: Int) -> Int {
-        
+    class func calculate(x: Float80, y: Float80, i: Int) -> Int {
         var z = vector2(x, y)
         
-        for passno in 0...i {
+        for passno in 0..<i {
             
-            if (pow(z.x, 2) + pow(z.y, 2)) >= 4 {
+            if (z.x * z.x + z.y * z.y) >= 4 {
                 return passno
             }
             
-            z = vector2(pow(z.x, 2) - pow(z.y, 2), 2 * z.x * z.y) + vector2(x, y)
+            z = vector2(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + vector2(x, y)
         }
         
         return i - 1
