@@ -10,41 +10,52 @@ import Cocoa
 
 class MandelbrotDrawClass {
     
-    let maxIterations = 750
+    let maxIterations = 2000
+    var Ox: Float80 = -2 {
+        willSet {
+            print("old Ox: \(Ox)")
+        }
+        didSet {
+            print("new Ox: \(Ox)")
+        }
+    }
+    var Oy: Float80 = -2 {
+        willSet {
+            print("old Oy: \(Oy)")
+        }
+        didSet {
+            print("new Oy: \(Oy)")
+        }
+    }
+    var Lx: Float80 = 4 {
+        willSet {
+            print("old Lx: \(Lx)")
+        }
+        didSet {
+            print("new Lx: \(Lx)")
+        }
+    }
+    var Ly: Float80 = 4 {
+        willSet {
+            print("old Ly: \(Ly)")
+        }
+        didSet {
+            print("new Ly: \(Ly)")
+        }
+    }
     
-    var zoom: CGFloat = 0
-    var offsetX: CGFloat = 0
-    var offsetY: CGFloat = 0
     let displayBounds = CGDisplayBounds(CGMainDisplayID()) // get the bounds of the main display
     let rect: CGRect
     let ctx: CGContext!
     let drawQueue = DispatchQueue(label: "drawQueue")
     
-    var xAdjustedMin: Float80 = -2
-    var yAdjustedMin: Float80 = -2
+    var randomColorList: [Int: [Int]] = [:]
+    let bitmapModificationQueue = DispatchQueue(label: "bitmapModificationQueue")
+    let image: CGImage
     
-    var Lx: Float80 = 4
-    var Ly: Float80 = 4
-    
-    let randomColorList: [[Int]]
-    
-    let bitmap: NSBitmapImageRep
+    let bitmapCache = NSCache<NSString, NSBitmapImageRep>()
     
     init() {
-        
-        var tempColorList: [[Int]] = []
-        
-        for _ in 0..<maxIterations {
-            tempColorList.append([
-                Int(arc4random_uniform(256)),
-                Int(arc4random_uniform(256)),
-                Int(arc4random_uniform(256)),
-                255
-                ]
-            )
-        }
-        
-        randomColorList = tempColorList
         
         CGDisplayCapture(CGMainDisplayID())
         
@@ -55,115 +66,151 @@ class MandelbrotDrawClass {
             exit(1)
         }
         
-        bitmap = NSBitmapImageRep(cgImage: image)
+        self.image = image
         
         rect = CGRect(
-            x: (bitmap.cgImage!.width - bitmap.cgImage!.height) / 2,
+            x: (image.width - image.height) / 2,
             y: 0,
-            width: bitmap.cgImage!.height,
-            height: bitmap.cgImage!.height )
+            width: image.height,
+            height: image.height )
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "draw"), object: nil, queue: nil) { (aNotification) in
             self.drawQueue.async {
-                self.draw(bitmap: self.bitmap)
+                self.draw()
             }
         }
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "zoomDec"), object: nil, queue: nil) { (aNotification) in
             self.drawQueue.async {
                 
-                self.xAdjustedMin -= self.Lx / 2
-                self.yAdjustedMin -= self.Ly / 2
-                
-                print("new values: xAdjustedMin: \(self.xAdjustedMin), yAdjustedMin: \(self.yAdjustedMin)")
+                self.Ox -= self.Lx / 2
+                self.Oy -= self.Ly / 2
                 
                 self.Lx *= 2
                 self.Ly *= 2
                 
-                print("new values: Lx: \(self.Lx), Ly: \(self.Ly)")
-                
-                self.draw(bitmap: self.bitmap)
+                self.draw()
             }
         }
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "zoomInc"), object: nil, queue: nil) { (aNotification) in
             self.drawQueue.async {
                 
-                self.xAdjustedMin += self.Lx / 4
-                self.yAdjustedMin += self.Ly / 4
-                
-                print("new values: xAdjustedMin: \(self.xAdjustedMin), yAdjustedMin: \(self.yAdjustedMin)")
+                self.Ox += self.Lx / 4
+                self.Oy += self.Ly / 4
                 
                 self.Lx /= 2
                 self.Ly /= 2
                 
-                print("new values: Lx: \(self.Lx), Ly: \(self.Ly)")
-                
-                self.draw(bitmap: self.bitmap)
+                self.draw()
             }
         }
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "offsetDecX"), object: nil, queue: nil) { (aNotification) in
             
             self.drawQueue.async {
-                self.xAdjustedMin -= self.Lx / 4
-                self.draw(bitmap: self.bitmap)
+                self.Ox -= self.Lx / 4
+                self.draw()
             }
         }
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "offsetIncX"), object: nil, queue: nil) { (aNotification) in
             
             self.drawQueue.async {
-                self.xAdjustedMin += self.Lx / 4
-                self.draw(bitmap: self.bitmap)
+                self.Ox += self.Lx / 4
+                self.draw()
             }
         }
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "offsetDecY"), object: nil, queue: nil) { (aNotification) in
             self.drawQueue.async {
-                self.yAdjustedMin -= self.Ly / 4
-                self.draw(bitmap: self.bitmap)
+                self.Oy -= self.Ly / 4
+                self.draw()
             }
         }
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "offsetIncY"), object: nil, queue: nil) { (aNotification) in
             self.drawQueue.async {
-                self.yAdjustedMin += self.Ly / 4
-                self.draw(bitmap: self.bitmap)
+                self.Oy += self.Ly / 4
+                self.draw()
             }
         }
     }
     
-    func draw(bitmap: NSBitmapImageRep) {
-        
-        // iterate through each pixel in the bitmap, and decide if it's inside the Mandelbrot set
-        // as well as how many iterations it took to leave the set
-        
-        for x in 0..<Int(rect.width) {
-            for y in 0..<Int(rect.height) {
-                
-                // performing each piece of this arithmetic with Float80 rather than Double or CGFloat yields higher-resolution results
-                
-                let iterations = Mandelbrot.calculate(
-                    x: xAdjustedMin + Float80(x) / Float80(Double(rect.width)) * Lx,
-                    y: yAdjustedMin + Float80(y) / Float80(Double(rect.height)) * Ly,
-                    i: self.maxIterations
-                )
-                
-                var pixel = randomColorList[iterations]
-                
-                bitmap.setPixel(
-                    &pixel,
-                    atX: x,
-                    y: y)
-            }
-        }
+    func draw() {
         
         // adjust the display bounds so that the bitmap is drawn centered
         
         let adjustedDisplayBounds = CGRect(x: (displayBounds.width - displayBounds.height) / 2, y: 0, width: displayBounds.width, height: displayBounds.height)
         
-        self.ctx!.draw(bitmap.cgImage!, in: adjustedDisplayBounds)
+        if let bitmap = bitmapCache.object(forKey: "\(Lx)-\(Ly)-\(Ox)-\(Oy)" as NSString) {
+            bitmapModificationQueue.sync(flags: .barrier) {
+                
+                // a way of resetting the display each time
+                
+                ctx.draw(
+                    image,
+                    in: displayBounds)
+                
+                ctx!.draw(
+                    bitmap.cgImage!,
+                    in: adjustedDisplayBounds)
+            }
+        } else {
+            
+            let bitmap = NSBitmapImageRep(cgImage: image)
+            
+            // iterate through each pixel in the bitmap, and decide if it's inside the Mandelbrot set
+            // as well as how many iterations it took to leave the set
+            
+            DispatchQueue.concurrentPerform(iterations: Int(rect.width)) { (x) in
+                DispatchQueue.concurrentPerform(iterations: Int(rect.height)) { (y) in
+                    
+                    // performing each piece of this arithmetic with Float80 rather than Double or CGFloat yields higher-resolution results
+                    
+                    let iterations = Mandelbrot.calculate(
+                        x: Ox + Float80(x) / Float80(Double(rect.width)) * Lx,
+                        y: Oy + Float80(y) / Float80(Double(rect.height)) * Ly,
+                        i: self.maxIterations
+                    )
+                    
+                    var pixel: [Int]
+                    
+                    if randomColorList[iterations] == nil {
+                        randomColorList[iterations] = [
+                            Int(arc4random_uniform(256)),
+                            Int(arc4random_uniform(256)),
+                            Int(arc4random_uniform(256)),
+                            Int(arc4random_uniform(256))
+                        ]
+                    }
+                    
+                    pixel = randomColorList[iterations]!
+                    
+                    bitmapModificationQueue.async {
+                        bitmap.setPixel(
+                            &pixel,
+                            atX: x,
+                            y: y)
+                    }
+                }
+            }
+            
+            bitmapCache.setObject(bitmap, forKey: "\(Lx)-\(Ly)-\(Ox)-\(Oy)" as NSString)
+            
+            bitmapModificationQueue.sync(flags: .barrier) {
+                
+                // a way of resetting the display each time
+                
+                ctx.draw(
+                    image,
+                    in: displayBounds)
+                
+                ctx!.draw(
+                    bitmap.cgImage!,
+                    in: adjustedDisplayBounds)
+            }
+        }
     }
 }
 
