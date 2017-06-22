@@ -10,10 +10,10 @@ import Foundation
 
 struct vector2 {
     
-    let x: Float80
-    let y: Float80
+    let x: Double
+    let y: Double
     
-    init(_ __x: Float80, _ __y: Float80) {
+    init(_ __x: Double, _ __y: Double) {
         x = __x
         y = __y
     }
@@ -24,7 +24,7 @@ struct vector2 {
 }
 
 class Mandelbrot {
-    class func calculate(x: Float80, y: Float80, i: Int) -> Int {
+    class func calculate(x: Double, y: Double, i: Int) -> Int {
         var z = vector2(0, 0)
         
         for passno in 0..<i {
