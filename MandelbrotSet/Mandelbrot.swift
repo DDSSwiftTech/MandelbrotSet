@@ -25,15 +25,15 @@ struct vector2 {
 
 class Mandelbrot {
     class func calculate(x: Float80, y: Float80, i: Int) -> Int {
-        var z = vector2(x, y)
+        var z = vector2(0, 0)
         
         for passno in 0..<i {
+            
+            z = vector2(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + vector2(x, y)
             
             if (z.x * z.x + z.y * z.y) >= 4 {
                 return passno
             }
-            
-            z = vector2(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + vector2(x, y)
         }
         
         return i - 1
