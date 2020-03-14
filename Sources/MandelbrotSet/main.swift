@@ -9,7 +9,6 @@
 import Cocoa
 
 class MandelbrotDrawClass {
-    
     let maxIterations = 2000
     var Ox: Double = -2 {
         willSet {
@@ -60,7 +59,6 @@ class MandelbrotDrawClass {
     let colorQueue = DispatchQueue(label: "colorQueue")
     
     init() {
-        
         CGDisplayCapture(CGMainDisplayID())
         
         ctx = CGDisplayGetDrawingContext(CGMainDisplayID())
