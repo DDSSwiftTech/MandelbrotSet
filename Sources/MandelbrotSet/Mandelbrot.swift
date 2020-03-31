@@ -8,30 +8,20 @@
 
 import Foundation
 
-struct vector2 {
-    
-    let x: Double
-    let y: Double
-    
-    init(_ __x: Double, _ __y: Double) {
-        x = __x
-        y = __y
-    }
-    
-    static func +(lhs: vector2, rhs: vector2) -> vector2 {
-        return vector2(lhs.x + rhs.x, lhs.y + rhs.y)
+extension CGVector {
+    static func +(lhs: CGVector, rhs: CGVector) -> CGVector {
+        return CGVector(dx: lhs.dx + rhs.dx, dy: lhs.dy + rhs.dy)
     }
 }
 
 class Mandelbrot {
     class func calculate(x: Double, y: Double, i: Int) -> Int {
-        var z = vector2(0, 0)
+        var z = CGVector(dx: 0, dy: 0)
         
         for passno in 0..<i {
+            z = CGVector(dx: pow(z.dx, 2) - pow(z.dy, 2), dy: 2 * z.dx * z.dy) + CGVector(dx: x, dy: y)
             
-            z = vector2(z.x * z.x - z.y * z.y, 2 * z.x * z.y) + vector2(x, y)
-            
-            if (z.x * z.x + z.y * z.y) >= 4 {
+            if (pow(z.dx, 2) + pow(z.dy, 2)) >= 4 {
                 return passno
             }
         }

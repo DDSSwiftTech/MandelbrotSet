@@ -9,7 +9,7 @@
 import Cocoa
 
 class MandelbrotDrawClass {
-    let maxIterations = 2000
+    let maxIterations = 210
     var Ox: Double = -2 {
         willSet {
             print("old Ox: \(Ox)")
@@ -43,38 +43,21 @@ class MandelbrotDrawClass {
         }
     }
     
-    let displayBounds = CGDisplayBounds(CGMainDisplayID()) // get the bounds of the main display
+    let height = Int(ProcessInfo.processInfo.arguments[1]) ?? 1000
+    let width = Int(ProcessInfo.processInfo.arguments[1]) ?? 1000
     let rect: CGRect
-    let ctx: CGContext!
-    let drawQueue = DispatchQueue(label: "drawQueue")
-    
     var randomColorList: [Int: NSColor] = [:]
-    let bitmapModificationQueue = DispatchQueue(label: "bitmapModificationQueue")
-    let image: CGImage
     
-    let cacheQueue = DispatchQueue(label: "CacheQueue")
-    
-    var iterationCountCache = Dictionary<hashable_double2, Int>()
-    var bitmapCache = Dictionary<hashable_double4, NSBitmapImageRep>()
-    let colorQueue = DispatchQueue(label: "colorQueue")
+    let saveThread = DispatchQueue(label: "savethread")
+    let colorAddQueue = DispatchQueue(label: "colorAddQueue")
     
     init() {
-        CGDisplayCapture(CGMainDisplayID())
-        
-        ctx = CGDisplayGetDrawingContext(CGMainDisplayID())
-        
-        guard let image = CGDisplayCreateImage(CGMainDisplayID()) else {
-            FileHandle.standardError.write("Failed to get create image\n".data(using: .utf8)!)
-            exit(1)
-        }
-        
-        self.image = image
-        
         rect = CGRect(
-            x: (image.width - image.height) / 2,
+            x: (CGFloat(self.width) - CGFloat(self.height)) / 2,
             y: 0,
-            width: image.height,
-            height: image.height )
+            width: CGFloat(self.width),
+            height: CGFloat(self.height)
+        )
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "draw"), object: nil, queue: nil) { (aNotification) in
             
@@ -130,109 +113,68 @@ class MandelbrotDrawClass {
     
     func draw() {
         
-        DispatchQueue.global().async {
-            
-            // adjust the display bounds so that the bitmap is drawn centered
-            
-            let adjustedDisplayBounds = CGRect(
-                x: (self.displayBounds.width - self.displayBounds.height) / 2,
-                y: 0,
-                width: self.displayBounds.width,
-                height: self.displayBounds.height
-            )
-            
-            if let _bitmap = self.bitmapCache[hashable_double4(x: self.Ox, y: self.Oy, z: self.Lx, w: self.Ly)] {
-                self.bitmapModificationQueue.sync(flags: .barrier) {
+        // iterate through each pixel in the bitmap, and decide if it's inside the Mandelbrot set
+        // as well as how many iterations it took to leave the set
+        //            for max_iterations in 0..<self.maxIterations {
+        
+        let piece_axis_max = 100
+        let height_piece = Int(self.rect.height) / piece_axis_max
+        let width_piece = Int(self.rect.width) / piece_axis_max
+        
+        for i in 0...maxIterations {
+            self.randomColorList[i] = NSColor(
+                calibratedRed: CGFloat(arc4random()) / CGFloat(UInt32.max),
+                green: CGFloat(arc4random()) / CGFloat(UInt32.max),
+                blue: CGFloat(arc4random()) / CGFloat(UInt32.max),
+                alpha: CGFloat(arc4random()) / CGFloat(UInt32.max))
+        }
+        
+        DispatchQueue.concurrentPerform(iterations: piece_axis_max) { (piece_x) in
+            DispatchQueue.concurrentPerform(iterations: piece_axis_max) { (piece_y) in
+                autoreleasepool {
+                    let rep = NSBitmapImageRep(
+                        bitmapDataPlanes: nil,
+                        pixelsWide: width_piece,
+                        pixelsHigh: height_piece,
+                        bitsPerSample: 8,
+                        samplesPerPixel: 4,
+                        hasAlpha: true,
+                        isPlanar: false,
+                        colorSpaceName: NSColorSpaceName.deviceRGB,
+                        bytesPerRow: self.width * 4,
+                        bitsPerPixel: 32
+                    )
                     
-                    // a way of resetting the display each time
-                    
-                    self.ctx.draw(
-                        self.image,
-                        in: self.displayBounds)
-                    
-                    self.ctx.draw(
-                        _bitmap.cgImage!,
-                        in: adjustedDisplayBounds)
-                }
-                
-            } else {
-                
-                let bitmap = NSBitmapImageRep(cgImage: self.image)
-                
-                // iterate through each pixel in the bitmap, and decide if it's inside the Mandelbrot set
-                // as well as how many iterations it took to leave the set
-                
-                DispatchQueue.concurrentPerform(iterations: Int(self.rect.width)) { (x) in
-                    DispatchQueue.concurrentPerform(iterations: Int(self.rect.height)) { (y) in
-                        // performing each piece of this arithmetic with Double rather than Double or CGFloat yields higher-resolution results
-                        
-                        let calcX = self.Ox + Double(x) / Double(self.rect.width) * self.Lx
-                        let calcY = self.Oy + Double(y) / Double(self.rect.height) * self.Ly
-                        
-                        let iterations: Int
-                        
-                        if let countForPixel = self.iterationCountCache[hashable_double2(x: calcX, y: calcY)] {
-                            iterations = countForPixel
-                        } else {
+                    for x in stride(from: piece_x * width_piece, through: (piece_x + 1) * width_piece, by: 1) {
+                        for y in stride(from: piece_y * height_piece, through: (piece_y + 1) * height_piece, by: 1) {
+                            let calcX = self.Ox + Double(x) / Double(self.rect.width) * self.Lx
+                            let calcY = self.Oy + Double(y) / Double(self.rect.height) * self.Ly
                             
-                            iterations = Mandelbrot.calculate(
+                            let iterations = Mandelbrot.calculate(
                                 x: calcX,
                                 y: calcY,
                                 i: self.maxIterations
                             )
                             
-                            self.cacheQueue.async {
-                                self.iterationCountCache[hashable_double2(x: calcX, y: calcY)] = iterations
-                            }
+                            rep?.setColor(self.randomColorList[iterations]!, atX: x % width_piece, y: y % height_piece)
                         }
-                        
-                        self.colorQueue.async {
-                            if self.randomColorList[iterations] == nil {
-                                self.randomColorList[iterations] = NSColor(
-                                    calibratedRed: CGFloat(arc4random()) / CGFloat(UInt32.max),
-                                    green: CGFloat(arc4random()) / CGFloat(UInt32.max),
-                                    blue: CGFloat(arc4random()) / CGFloat(UInt32.max),
-                                    alpha: CGFloat(arc4random()) / CGFloat(UInt32.max))
-                            }
-                            
-                            let pixel: NSColor = self.randomColorList[iterations]!
-                            
-                            self.bitmapModificationQueue.async {
-                                bitmap.setColor(
-                                    pixel, atX: x, y: y)
-                            }
-                        }
+                    }
+                    
+                    saveThread.async {
+                        try! rep!.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: "/Users/davidschwartz/MandelbrotPieces/mandelbrot_\(piece_y)_\(piece_x).png"))
                     }
                 }
-                
-                self.colorQueue.sync(flags: .barrier, execute: { () in
-                    
-                    self.bitmapCache[hashable_double4(x: self.Ox, y: self.Oy, z: self.Lx, w: self.Ly)] = bitmap
-                    
-                    self.bitmapModificationQueue.sync(flags: .barrier) {
-                        
-                        // a way of resetting the display each time
-                        
-                        self.ctx.draw(
-                            self.image,
-                            in: self.displayBounds)
-                        
-                        self.ctx.draw(
-                            bitmap.cgImage!,
-                            in: adjustedDisplayBounds)
-                    }
-                    
-                })
             }
         }
+        
+        //        colorQueue.async(flags: .barrier) {
+        //            self.imageProcessingQueue.async(flags: .barrier) {
+        //                exit(0)
+        //            }
+        //        }
     }
 }
 
 let drawObject = MandelbrotDrawClass()
 
-NotificationCenter.default.post(name: NSNotification.Name(rawValue: "draw"), object: nil)
-
-RunLoop.main.add(generateKeyTracker(), forMode: .defaultRunLoopMode)
-
-RunLoop.main.run()
-
+drawObject.draw()
