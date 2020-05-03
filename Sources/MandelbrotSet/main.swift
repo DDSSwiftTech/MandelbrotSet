@@ -9,8 +9,8 @@
 import Cocoa
 
 class MandelbrotDrawClass {
-    let maxIterations = 20000
-    var Ox: Float80 = -2 {
+    let maxIterations = 200
+    var Ox: Float80 = -3 {
         willSet {
             print("old Ox: \(Ox)")
         }
@@ -63,8 +63,9 @@ class MandelbrotDrawClass {
         }
         
         newContext = NSGraphicsContext(cgContext: cgContext, flipped: false)
-        let tempRect = CGDisplayBounds(CGMainDisplayID())
-        rect = CGRect(x: 0, y: 0, width: tempRect.height, height: tempRect.height)
+        rect = CGDisplayBounds(CGMainDisplayID())
+        self.Lx = Ly * Float80(rect.width) / Float80(rect.height)
+        
         NSGraphicsContext.current = newContext
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "draw"), object: nil, queue: nil) { (aNotification) in
@@ -155,10 +156,10 @@ class MandelbrotDrawClass {
                         
                     let color = self.randomColorList[iterations]!
                     
-                    bytes[8 + 4 * (y * Int(self.rect.height) + x)] = UInt8(color.redComponent * CGFloat(UInt8.max))
-                    bytes[9 + 4 * (y * Int(self.rect.height) + x)] = UInt8(color.greenComponent * CGFloat(UInt8.max))
-                    bytes[10 + 4 * (y * Int(self.rect.height) + x)] = UInt8(color.blueComponent * CGFloat(UInt8.max))
-                    bytes[11 + 4 * (y * Int(self.rect.height) + x)] = 0xff
+                    bytes[8 + 4 * (y * Int(self.rect.width) + x)] = UInt8(color.redComponent * CGFloat(UInt8.max))
+                    bytes[9 + 4 * (y * Int(self.rect.width) + x)] = UInt8(color.greenComponent * CGFloat(UInt8.max))
+                    bytes[10 + 4 * (y * Int(self.rect.width) + x)] = UInt8(color.blueComponent * CGFloat(UInt8.max))
+                    bytes[11 + 4 * (y * Int(self.rect.width) + x)] = 0xff
                 }
             }
             
