@@ -20,9 +20,6 @@ func generateKeyTracker() -> CFMachPort {
         callback: { (proxy, type, event, zoom) -> Unmanaged<CGEvent>? in
             switch event.getIntegerValueField(.keyboardEventKeycode) {
             case 1: // S: Save
-                
-                let displayBounds = CGDisplayBounds(CGMainDisplayID())
-                
                 guard (try? FileManager.default.createDirectory(
                     atPath: NSHomeDirectory() + "/Desktop/2DShapesCGPictures",
                     withIntermediateDirectories: true,
