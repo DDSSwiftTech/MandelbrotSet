@@ -9,7 +9,7 @@
 import Cocoa
 
 class MandelbrotDrawClass {
-    let maxIterations = 20000
+    let maxIterations = 50000
     var Ox: Float80 = -3 {
         willSet {
             print("old Ox: \(Ox)")
@@ -43,15 +43,15 @@ class MandelbrotDrawClass {
         }
     }
     
-//    let height = Int(ProcessInfo.processInfo.arguments[1]) ?? 1000
-//    let width = Int(ProcessInfo.processInfo.arguments[1]) ?? 1000
+    //    let height = Int(ProcessInfo.processInfo.arguments[1]) ?? 1000
+    //    let width = Int(ProcessInfo.processInfo.arguments[1]) ?? 1000
     let rect: CGRect
     var randomColorList: [Int: NSColor] = [:]
     
     let saveThread = DispatchQueue(label: "savethread")
-    let colorAddQueue = DispatchQueue(label: "colorAddQueue")
     let cgContext = CGDisplayGetDrawingContext(CGMainDisplayID())!
     let newContext: NSGraphicsContext
+    let drawQueue = DispatchQueue(label: "drawQueue")
     
     init() {
         for i in 0...maxIterations {
@@ -121,50 +121,54 @@ class MandelbrotDrawClass {
     }
     
     func draw() {
-        autoreleasepool {
-            let offscreenRep = NSBitmapImageRep(
-                bitmapDataPlanes:nil,
-                pixelsWide:Int(self.rect.width),
-                pixelsHigh:Int(self.rect.height),
-                bitsPerSample:8,
-                samplesPerPixel:4,
-                hasAlpha:true,
-                isPlanar:false,
-                colorSpaceName:NSColorSpaceName.deviceRGB,
-                bitmapFormat:NSBitmapImageRep.Format.alphaFirst,
-                bytesPerRow:0,
-                bitsPerPixel:0
-            )!
-
-            let context = NSGraphicsContext(bitmapImageRep: offscreenRep)!
-//            NSGraphicsContext.current = context
-            let image = context.cgContext.makeImage()!
-            let nsImage = NSImage(cgImage: image, size: self.rect.size)
-            var rawTiff = nsImage.tiffRepresentation!
-            let bytes = rawTiff.withUnsafeMutableBytes { $0 }
-            
-            DispatchQueue.concurrentPerform(iterations: Int(self.rect.width)) { (x) in
-                for y in 0..<Int(self.rect.height) {
-                    let calcX = self.Ox + Float80(x) / Float80(self.rect.width) * self.Lx
-                    let calcY = self.Oy + Float80(y) / Float80(self.rect.height) * self.Ly
-                    
-                    let iterations = Mandelbrot.calculate(
-                        x: calcX,
-                        y: calcY,
-                        i: self.maxIterations
-                    )
+        self.drawQueue.async {
+            autoreleasepool {
+                let offscreenRep = NSBitmapImageRep(
+                    bitmapDataPlanes:nil,
+                    pixelsWide:Int(self.rect.width),
+                    pixelsHigh:Int(self.rect.height),
+                    bitsPerSample:8,
+                    samplesPerPixel:4,
+                    hasAlpha:true,
+                    isPlanar:false,
+                    colorSpaceName:NSColorSpaceName.deviceRGB,
+                    bitmapFormat:NSBitmapImageRep.Format.alphaFirst,
+                    bytesPerRow:0,
+                    bitsPerPixel:0
+                    )!
+                
+                let context = NSGraphicsContext(bitmapImageRep: offscreenRep)!
+                //            NSGraphicsContext.current = context
+                let image = context.cgContext.makeImage()!
+                let nsImage = NSImage(cgImage: image, size: self.rect.size)
+                var rawTiff = nsImage.tiffRepresentation!
+                let bytes = rawTiff.withUnsafeMutableBytes { $0 }
+                
+                DispatchQueue.concurrentPerform(iterations: Int(self.rect.width)) { (x) in
+                    for y in 0..<Int(self.rect.height) {
+                        let calcX = self.Ox + Float80(x) / Float80(self.rect.width) * self.Lx
+                        let calcY = self.Oy + Float80(y) / Float80(self.rect.height) * self.Ly
                         
-                    let color = self.randomColorList[iterations]!
-                    
-                    bytes[8 + 4 * (y * Int(self.rect.width) + x)] = UInt8(color.redComponent * CGFloat(UInt8.max))
-                    bytes[9 + 4 * (y * Int(self.rect.width) + x)] = UInt8(color.greenComponent * CGFloat(UInt8.max))
-                    bytes[10 + 4 * (y * Int(self.rect.width) + x)] = UInt8(color.blueComponent * CGFloat(UInt8.max))
-                    bytes[11 + 4 * (y * Int(self.rect.width) + x)] = 0xff
+                        let iterations = Mandelbrot.calculate(
+                            x: calcX,
+                            y: calcY,
+                            i: self.maxIterations
+                        )
+                        
+                        let color = self.randomColorList[iterations]!
+                        
+                        bytes[8 + 4 * (y * Int(self.rect.width) + x)] = UInt8(color.redComponent * CGFloat(UInt8.max))
+                        bytes[9 + 4 * (y * Int(self.rect.width) + x)] = UInt8(color.greenComponent * CGFloat(UInt8.max))
+                        bytes[10 + 4 * (y * Int(self.rect.width) + x)] = UInt8(color.blueComponent * CGFloat(UInt8.max))
+                        bytes[11 + 4 * (y * Int(self.rect.width) + x)] = 0xff
+                    }
+                }
+                
+                let resultImage = NSImage(data: rawTiff)
+                DispatchQueue.main.sync {
+                    resultImage?.draw(in: self.rect)
                 }
             }
-            
-            let resultImage = NSImage(data: rawTiff)
-            resultImage?.draw(in: self.rect)
         }
     }
 }
