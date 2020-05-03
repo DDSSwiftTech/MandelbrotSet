@@ -22,9 +22,9 @@ class Mandelbrot {
         var z = Vector80(dx: 0, dy: 0)
         
         for passno in 0..<i {
-            z = Vector80(dx: pow(z.dx, 2) - pow(z.dy, 2), dy: 2 * z.dx * z.dy) + Vector80(dx: x, dy: y)
+            z = Vector80(dx: z.dx * z.dx - z.dy * z.dy, dy: 2 * z.dx * z.dy) + Vector80(dx: x, dy: y)
             
-            if (pow(z.dx, 2) + pow(z.dy, 2)) >= 4 {
+            if (z.dx * z.dx + z.dy * z.dy) >= 4 {
                 return passno
             }
         }
