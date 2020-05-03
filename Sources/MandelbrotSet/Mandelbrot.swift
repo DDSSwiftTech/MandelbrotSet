@@ -20,9 +20,10 @@ struct Vector80 {
 class Mandelbrot {
     class func calculate(x: Float80, y: Float80, i: Int) -> Int {
         var z = Vector80(dx: 0, dy: 0)
+        let oZ = Vector80(dx: x, dy: y)
         
         for passno in 0..<i {
-            z = Vector80(dx: z.dx * z.dx - z.dy * z.dy, dy: 2 * z.dx * z.dy) + Vector80(dx: x, dy: y)
+            z = Vector80(dx: z.dx * z.dx - z.dy * z.dy, dy: 2 * z.dx * z.dy) + oZ
             
             if (z.dx * z.dx + z.dy * z.dy) >= 4 {
                 return passno
