@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		OBJ_23 /* Double2Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Double2Ext.swift */; };
-		OBJ_24 /* Double4Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* Double4Ext.swift */; };
 		OBJ_25 /* KeyTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* KeyTracker.swift */; };
 		OBJ_26 /* Mandelbrot.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Mandelbrot.swift */; };
 		OBJ_28 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* main.swift */; };
@@ -16,12 +14,10 @@
 
 /* Begin PBXFileReference section */
 		"MandelbrotSet::MandelbrotSet::Product" /* MandelbrotSet */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = MandelbrotSet; sourceTree = BUILT_PRODUCTS_DIR; };
-		OBJ_10 /* Double4Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Double4Ext.swift; sourceTree = "<group>"; };
 		OBJ_11 /* KeyTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTracker.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Mandelbrot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mandelbrot.swift; sourceTree = "<group>"; };
 		OBJ_14 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		OBJ_9 /* Double2Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Double2Ext.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,8 +67,6 @@
 		OBJ_8 /* MandelbrotSet */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_9 /* Double2Ext.swift */,
-				OBJ_10 /* Double4Ext.swift */,
 				OBJ_11 /* KeyTracker.swift */,
 				OBJ_12 /* Mandelbrot.swift */,
 				OBJ_14 /* main.swift */,
@@ -136,8 +130,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_23 /* Double2Ext.swift in Sources */,
-				OBJ_24 /* Double4Ext.swift in Sources */,
 				OBJ_25 /* KeyTracker.swift in Sources */,
 				OBJ_26 /* Mandelbrot.swift in Sources */,
 				OBJ_28 /* main.swift in Sources */,
@@ -157,9 +149,11 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = MandelbrotSet.xcodeproj/MandelbrotSet_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
+				SWIFT_DISABLE_SAFETY_CHECKS = YES;
 				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
 				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
 				SWIFT_VERSION = 5.0;
@@ -178,9 +172,11 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = MandelbrotSet.xcodeproj/MandelbrotSet_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
+				SWIFT_DISABLE_SAFETY_CHECKS = YES;
 				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
 				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
 				SWIFT_VERSION = 5.0;
