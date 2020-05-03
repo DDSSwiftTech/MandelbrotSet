@@ -9,7 +9,7 @@
 import Cocoa
 
 class MandelbrotDrawClass {
-    let maxIterations = 200
+    let maxIterations = 20000
     var Ox: Float80 = -3 {
         willSet {
             print("old Ox: \(Ox)")
