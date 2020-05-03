@@ -30,20 +30,16 @@ func generateKeyTracker() -> CFMachPort {
                         break
                 }
                 
-                guard let cgImage = CGDisplayCreateImage(
-                    CGMainDisplayID(),
-                    rect:CGRect(
-                        x: displayBounds.midX > displayBounds.midY ? displayBounds.midX - displayBounds.midY : displayBounds.midY - displayBounds.midX,
-                        y: 0,
-                        width: displayBounds.midX > displayBounds.midY ? displayBounds.height : displayBounds.width,
-                        height: displayBounds.midX > displayBounds.midY ? displayBounds.height : displayBounds.width
-                )) else {
+                guard let cgImage = CGDisplayCreateImage(CGMainDisplayID()) else {
                     break
                 }
                 
                 if let destination = CGImageDestinationCreateWithURL(
-                    URL(fileURLWithPath: NSHomeDirectory() + "/Desktop/\( Date(timeIntervalSinceNow: TimeInterval(TimeZone.current.secondsFromGMT())) ).png",
-                        isDirectory: false) as CFURL,
+                    FileManager.default.homeDirectoryForCurrentUser
+                        .appendingPathComponent("Desktop")
+                        .appendingPathComponent("2DShapesCGPictures")
+                        .appendingPathComponent("\(Date(timeIntervalSinceNow: TimeInterval(TimeZone.current.secondsFromGMT())))")
+                        .appendingPathExtension("png") as CFURL,
                     kUTTypePNG, 1, nil) {
                     
                     CGImageDestinationAddImage(destination, cgImage, nil)
