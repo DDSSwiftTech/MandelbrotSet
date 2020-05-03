@@ -8,12 +8,6 @@
 
 import Foundation
 
-extension CGVector {
-    static func +(lhs: CGVector, rhs: CGVector) -> CGVector {
-        return CGVector(dx: lhs.dx + rhs.dx, dy: lhs.dy + rhs.dy)
-    }
-}
-
 struct Vector80 {
     let dx: Float80
     let dy: Float80
