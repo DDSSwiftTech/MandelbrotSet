@@ -10,7 +10,7 @@ import Cocoa
 
 class MandelbrotDrawClass {
     let maxIterations = 50000
-    var Ox: Float80 = -3 {
+    var Ox: Float80 = -2 {
         willSet {
             print("old Ox: \(Ox)")
         }
@@ -64,6 +64,7 @@ class MandelbrotDrawClass {
         
         newContext = NSGraphicsContext(cgContext: cgContext, flipped: false)
         rect = CGDisplayBounds(CGMainDisplayID())
+        self.Ox = -(Lx / 2) * Float80(rect.width) / Float80(rect.height)
         self.Lx = Ly * Float80(rect.width) / Float80(rect.height)
         
         NSGraphicsContext.current = newContext
